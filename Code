@@ -1,0 +1,165 @@
+import cv2
+importnumpyas np
+importRPi.GPIOas GPIO
+import time
+importsmtplib,ssl
+fromemail.mime.multipartimportMIMEMultipart 
+fromemail.mime.baseimportMIMEBase 
+fromemail.mime.textimportMIMEText 
+fromemail.utilsimportformatdate 
+from email import encoders
+fromsmtplibimportSMTPException
+import board
+importbusio
+import adafruit_adxl34x
+fromgpiozeroimport Servo
+from time import sleep
+servo = Servo(17)
+i2c = busio.I2C(board.SCL, board.SDA)
+accelerometer = adafruit_adxl34x.ADXL345(i2c)
+defsend_email():
+print('sending mail')
+toaddr = 'srcesolutions@gmail.com' # To id 
+me = 'srcesolutions@gmail.com' # your id
+subject = 'SOMEONE TRYING TO BREAK THE ATM-123 at Loc:ABC'
+# Subjec
+msg = MIMEMultipart() 
+msg['Subject'] = subject 
+msg['From'] = me 
+msg['To'] = toaddr 
+msg.preamble = "test "
+#msg.attach(MIMEText(text)) 
+part = MIMEBase('application', "octet-stream") 
+part.set_payload(open("image.jpg", "rb").read()) 
+encoders.encode_base64(part) 
+part.add_header('Content-Disposition', 'attachment; 
+filename="image.jpg"') # File name and format name
+msg.attach(part) 
+try: 
+s = smtplib.SMTP('smtp.gmail.com', 587) # Protocol
+s.ehlo() 
+s.starttls() 
+s.ehlo() 
+s.login(user = 'srcesolutions@gmail.com', password = 
+'src@again') # User id & password
+#s.send_message(msg) 
+s.sendmail(me, toaddr, msg.as_string()) 
+s.quit() 
+#except: 
+# print ("Error: unable to send email") 
+exceptSMTPExceptionas error: 
+print ("Error") # Exception
+#video_file = "video_1.mp4"
+video = cv2.VideoCapture(0)
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+LCD_RS = 4
+LCD_E =27
+LCD_D4 = 22
+LCD_D5 = 10
+LCD_D6 = 9
+LCD_D7 = 11
+buz = 26
+GPIO.setup(buz,GPIO.OUT)
+GPIO.output(buz,0)
+servo.value=-1
+time.sleep(1)
+#initializing LCD
+LCD_WIDTH = 16
+LCD_CHR = True
+LCD_CMD = False
+LCD_LINE_1 = 0x80
+LCD_LINE_2 = 0xC0
+# Timing constants
+E_PULSE = 0.0005
+E_DELAY = 0.0005
+GPIO.setup(LCD_E, GPIO.OUT) # E
+GPIO.setup(LCD_RS, GPIO.OUT) # RS
+GPIO.setup(LCD_D4, GPIO.OUT) # DB4
+GPIO.setup(LCD_D5, GPIO.OUT) # DB5
+GPIO.setup(LCD_D6, GPIO.OUT) # DB6
+GPIO.setup(LCD_D7, GPIO.OUT) # DB7
+# LCD functions
+deflcd_init():
+lcd_byte(0x33,LCD_CMD) # 110011 Initialise
+lcd_byte(0x32,LCD_CMD) # 110010 Initialise
+lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction
+lcd_byte(0x0C,LCD_CMD) # 001100 Display On,Cursor Off, Blink Off
+lcd_byte(0x28,LCD_CMD) # 101000 Data length, number of lines, font 
+size
+lcd_byte(0x01,LCD_CMD) # 000001 Clear display
+time.sleep(E_DELAY)
+deflcd_byte(bits, mode):
+GPIO.output(LCD_RS, mode) # RS
+# High bits
+GPIO.output(LCD_D4, False)
+GPIO.output(LCD_D5, False)
+GPIO.output(LCD_D6, False)
+GPIO.output(LCD_D7, False)
+if bits&0x10==0x10:
+GPIO.output(LCD_D4, True)
+if bits&0x20==0x20:
+GPIO.output(LCD_D5, True)
+if bits&0x40==0x40:
+GPIO.output(LCD_D6, True)
+if bits&0x80==0x80:
+GPIO.output(LCD_D7, True)
+# Toggle 'Enable' pin
+lcd_toggle_enable()
+# Low bits
+GPIO.output(LCD_D4, False)
+GPIO.output(LCD_D5, False)
+GPIO.output(LCD_D6, False)
+GPIO.output(LCD_D7, False)
+if bits&0x01==0x01:
+GPIO.output(LCD_D4, True)
+if bits&0x02==0x02:
+GPIO.output(LCD_D5, True)
+if bits&0x04==0x04:
+GPIO.output(LCD_D6, True)
+if bits&0x08==0x08:
+GPIO.output(LCD_D7, True)
+# Toggle 'Enable' pin
+lcd_toggle_enable()
+deflcd_toggle_enable():
+# Toggle enable
+time.sleep(E_DELAY)
+GPIO.output(LCD_E, True)
+time.sleep(E_PULSE)
+GPIO.output(LCD_E, False)
+time.sleep(E_DELAY)
+deflcd_string(message,line):
+message = message.ljust(LCD_WIDTH," ")
+lcd_byte(line, LCD_CMD)
+foriinrange(LCD_WIDTH):
+lcd_byte(ord(message[i]),LCD_CHR)
+lcd_init()
+lcd_byte(0x01,LCD_CMD)
+lcd_string("ATM SECCURITY SYS ",LCD_LINE_1)
+time.sleep(3)
+whileTrue:
+x,y,z=accelerometer.acceleration
+lcd_byte(0x01,LCD_CMD)
+lcd_string("X:" +str(round(x,2)) + " 
+Y:"+str(round(y,2)),LCD_LINE_1)
+(grabbed, frame) = video.read()
+ifnot grabbed:
+break
+cv2.imshow("input", frame)
+if cv2.waitKey(1) &0xFF == ord('q'):
+break
+if(x>5or x<-5or y>5or y<-5):
+GPIO.output(buz,1)
+print("ALERT...")
+lcd_byte(0x01,LCD_CMD)
+lcd_string("Alert Sending Info",LCD_LINE_1)
+servo.value=1
+time.sleep(1)
+cv2.imwrite('image.jpg',frame)
+cv2.waitKey(1)
+send_email()
+GPIO.output(buz,0)
+while(True):
+time.sleep(0.1)
+cv2.destroyAllWindows()
+video.release()
