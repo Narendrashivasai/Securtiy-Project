@@ -10,3 +10,25 @@ computer. By using some hardware components, the entire scenario, robbery occurr
 and its location send to near by police station and corresponding bank. In the other hand if the 
 thief tries to break the door or damage the camera then immediately atm responds to send the 
 alert messages to the nearby police station, and corresponding bank.
+
+
+
+PROBLEM STATEMENT:
+
+Today robberies are increasing day by day in many fields, so to reduce the 
+theft that are happening in the public sector.
+The main aim of the project is to stop the robberies by detecting the theft using 
+vibrating sensor and locking the main doors. And also, it immediately sends a SMS to 
+the police and sounds a buzzer to alert the surroundings. 
+
+OBJECTIVES:
+
+The main objective of this project is to reduce the ATM robberies using An 
+Advanced technologies like raspberry pi.
+The objectives of the proposed system are
+• To overcome the ATM theft.
+• Restrict the entry of any unauthorized person.
+• Provide more security.
+• Formal step towards smart city.
+The proposed setup can be installed at public places like schools, colleges, shopping 
+malls, supermarkets, parks. ATM etc., where the chances occurring of robberies.
