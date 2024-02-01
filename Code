@@ -122,44 +122,4 @@ GPIO.output(LCD_D7, True)
 # Toggle 'Enable' pin
 lcd_toggle_enable()
 deflcd_toggle_enable():
-# Toggle enable
-time.sleep(E_DELAY)
-GPIO.output(LCD_E, True)
-time.sleep(E_PULSE)
-GPIO.output(LCD_E, False)
-time.sleep(E_DELAY)
-deflcd_string(message,line):
-message = message.ljust(LCD_WIDTH," ")
-lcd_byte(line, LCD_CMD)
-foriinrange(LCD_WIDTH):
-lcd_byte(ord(message[i]),LCD_CHR)
-lcd_init()
-lcd_byte(0x01,LCD_CMD)
-lcd_string("ATM SECCURITY SYS ",LCD_LINE_1)
-time.sleep(3)
-whileTrue:
-x,y,z=accelerometer.acceleration
-lcd_byte(0x01,LCD_CMD)
-lcd_string("X:" +str(round(x,2)) + " 
-Y:"+str(round(y,2)),LCD_LINE_1)
-(grabbed, frame) = video.read()
-ifnot grabbed:
-break
-cv2.imshow("input", frame)
-if cv2.waitKey(1) &0xFF == ord('q'):
-break
-if(x>5or x<-5or y>5or y<-5):
-GPIO.output(buz,1)
-print("ALERT...")
-lcd_byte(0x01,LCD_CMD)
-lcd_string("Alert Sending Info",LCD_LINE_1)
-servo.value=1
-time.sleep(1)
-cv2.imwrite('image.jpg',frame)
-cv2.waitKey(1)
-send_email()
-GPIO.output(buz,0)
-while(True):
-time.sleep(0.1)
-cv2.destroyAllWindows()
-video.release()
+
